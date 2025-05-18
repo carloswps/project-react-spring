@@ -31,7 +31,7 @@ public class ImageServiceImpl implements ImageServices {
 
     private void validateImage(Image image) {
         if (image == null || image.getFile() == null || image.getTags().isEmpty()) {
-            throw new IllegalArgumentException("Invalid image data. Please provide a valid image and tags.");
+            throw new IllegalArgumentException("Please provide a valid image.");
         }
     }
 }
