@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
@@ -27,6 +28,11 @@ public class ImageServiceImpl implements ImageServices {
             logger.severe("Error saving image: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @Override
+    public Optional<Image> getById(String id) {
+        return repository.findById(id);
     }
 
     private void validateImage(Image image) {
