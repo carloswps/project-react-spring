@@ -1,6 +1,7 @@
 package carloswps.gihut.imageliteapi.aplication.images;
 
 import carloswps.gihut.imageliteapi.domain.entity.Image;
+import carloswps.gihut.imageliteapi.domain.enums.ImageExtension;
 import carloswps.gihut.imageliteapi.domain.services.ImageServices;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/images")
@@ -52,8 +54,23 @@ public class ImagesController {
         headers.setContentType(image.getExtension().getMediaType());
         headers.setContentLength(image.getSize());
         headers.setContentDispositionFormData(
-                "inline; filename=\" + image.getFileName() + \"", image.getFileName());
+                "inline", image.getFileName());
         return new ResponseEntity<>(image.getFile(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ImageDTO>> search(
+            @RequestParam(value = "extension", required = false, defaultValue = "") String extension,
+            @RequestParam(value = "query", required = false) String query
+    ) {
+        var results = service.search(ImageExtension.valueOf(extension), query);
+
+        var images = results.stream().map(image -> {
+            var url = buildImageURL(image);
+            return mapper.imageToDto(image, url.toString());
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(images);
     }
 
     // Builds the URL to access a saved image on the server

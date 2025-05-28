@@ -1,12 +1,14 @@
 package carloswps.gihut.imageliteapi.aplication.images;
 
 import carloswps.gihut.imageliteapi.domain.entity.Image;
+import carloswps.gihut.imageliteapi.domain.enums.ImageExtension;
 import carloswps.gihut.imageliteapi.domain.services.ImageServices;
 import carloswps.gihut.imageliteapi.infra.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -34,6 +36,12 @@ public class ImageServiceImpl implements ImageServices {
     public Optional<Image> getById(String id) {
         return repository.findById(id);
     }
+
+    @Override
+    public List<Image> search(ImageExtension extension, String query) {
+        return repository.findByExtensionAndNameOrTagsLike(extension, query);
+    }
+
 
     private void validateImage(Image image) {
         if (image == null || image.getFile() == null || image.getTags().isEmpty()) {
