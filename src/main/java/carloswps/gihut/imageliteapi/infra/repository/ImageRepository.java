@@ -9,27 +9,22 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
+import static carloswps.gihut.imageliteapi.infra.repository.specs.GenericSpecs.Specification;
+import static carloswps.gihut.imageliteapi.infra.repository.specs.ImagesSpecs.*;
+import static org.springframework.data.jpa.domain.Specification.anyOf;
+import static org.springframework.data.jpa.domain.Specification.where;
+
 public interface ImageRepository extends JpaRepository<Image, String>, JpaSpecificationExecutor<Image> {
 
     default List<Image> findByExtensionAndNameOrTagsLike(ImageExtension extension, String query) {
-        Specification<Image> conjuction = (root, q, cb) -> cb.conjunction();
-        Specification<Image> spec = Specification.where(conjuction);
+        Specification<Image> spec = where(Specification());
 
         if (extension != null) {
-            Specification<Image> extensionEqual = (root, q, cb) ->
-                    cb.equal(root.get("extension"), extension);
-            spec = spec.and(extensionEqual);
+            spec = spec.and(extensionEqual(extension));
         }
-        if (StringUtils.hasText(query)) {
-            Specification<Image> nameLike = (root, q, cb) ->
-                    cb.like(cb.upper(root.get("Name")), "%" + query.toUpperCase() + "%");
-            Specification<Image> tagLike = (root, q, cb) ->
-                    cb.or(
-                            cb.like(cb.upper(root.get("tags")), "%" + query.toUpperCase() + "%"),
-                            cb.like(cb.upper(root.get("name")), "%" + query.toUpperCase() + "%")
-                    );
 
-            Specification<Image> nameOrTagsLike = Specification.anyOf(nameLike, tagLike);
+        if (StringUtils.hasText(query)) {
+            Specification<Image> nameOrTagsLike = anyOf(nameLike(query), tagsLike(query));
             spec = spec.and(nameOrTagsLike);
         }
         return findAll(spec);

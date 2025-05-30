@@ -8,9 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +42,21 @@ public class ImageServiceImpl implements ImageServices {
 
     @Override
     public List<Image> search(ImageExtension extension, String query) {
-        return repository.findByExtensionAndNameOrTagsLike(extension, query);
+        if (extension != null && !isValidExtension(extension)) {
+            return Collections.emptyList();
+        }
+        return repository.findByExtensionAndNameOrTagsLike(extension, query)
+                .stream()
+                .limit(10)
+                .collect(Collectors.toList());
+    }
+
+    private boolean isValidExtension(ImageExtension extension) {
+        try {
+            return Arrays.asList(ImageExtension.values()).contains(extension);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 
