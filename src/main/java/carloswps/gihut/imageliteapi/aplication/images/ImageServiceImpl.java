@@ -65,4 +65,9 @@ public class ImageServiceImpl implements ImageServices {
             throw new IllegalArgumentException("Please provide a valid image.");
         }
     }
+
+    private String formatFileTypeImage(long bytes) {
+        double megabytes = bytes / (1024.0 * 1024.0);
+        return String.format("%.2f MB", megabytes);
+    }
 }

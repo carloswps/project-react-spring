@@ -11,6 +11,19 @@ import java.util.List;
 
 @Component
 public class ImagesMapper {
+
+    private String formatFileTypeImage(long bytes) {
+        if (bytes < 1024) {
+            return bytes + "B";
+        } else if (bytes < 1024 * 1024) {
+            double kilobytes = bytes / 1024.0;
+            return String.format("%.2f KB", kilobytes);
+        } else {
+            double megabytes = bytes / (1024.0 * 1024.0);
+            return String.format("%.2f MB", megabytes);
+        }
+    }
+
     public Image mapToImage(MultipartFile file, String name, List<String> tags) throws IOException {
         return Image.builder()
                 .name(name)
@@ -26,7 +39,7 @@ public class ImagesMapper {
                 .url(url)
                 .extension(image.getExtension().name())
                 .name(image.getName())
-                .size(image.getSize() + " Bytes")
+                .size(formatFileTypeImage(image.getSize()))
                 .uploadDate(image.getUploadDate().toLocalDate())
                 .build();
     }

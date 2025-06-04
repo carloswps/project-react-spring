@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/v1/images")
 @Slf4j
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ImagesController {
     private final ImageServices service;
     private final ImagesMapper mapper;
@@ -81,5 +82,4 @@ public class ImagesController {
                 .path(imagePath)
                 .build().toUri();
     }
-
 }
