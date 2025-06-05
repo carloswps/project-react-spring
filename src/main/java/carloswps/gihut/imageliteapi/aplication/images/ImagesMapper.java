@@ -33,11 +33,14 @@ public class ImagesMapper {
                 .file(file.getBytes())
                 .build();
     }
-
     public ImageDTO imageToDto(Image image, String url) {
+        if (  image == null) {
+            return null;
+        }
+        String extension = image.getExtension() != null ? image.getExtension().name() : "non identified format";
         return ImageDTO.builder()
                 .url(url)
-                .extension(image.getExtension().name())
+                .extension(extension)
                 .name(image.getName())
                 .size(formatFileTypeImage(image.getSize()))
                 .uploadDate(image.getUploadDate().toLocalDate())
